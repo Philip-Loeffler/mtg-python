@@ -42,15 +42,20 @@ def getCardById(id):
 
 
 #post
-app.route('/card', methods=['POST'])
+@app.route('/addCard', methods=['POST'])
 def addCard():
 	try:
+		json = request.json
+		ExpansionId = json.get("ExpansionID")
+		cardName = json.get("Name")
+		cardQuantity = json.get("Quantity")
+		cardTypeId = json.get("TypeID")
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		sql = "INSERT INTO CARD(ExpansionID={}, ID={}, Name={}, Quantity={}, TypeID={}) VALUES(%s, %s, %s, %s, %s)"
+		sql = "INSERT INTO CARD (Name, Quantity, TypeID, ExpansionID) VALUES (cardName, cardQuantity, cardTypeId, ExpansionId)"
 		cursor.execute(sql)
 		conn.commit()
-		resp = jsonify('User added successfully!')
+		resp = jsonify('card added successfully!')
 		resp.status_code = 200
 
 		return resp
@@ -60,6 +65,46 @@ def addCard():
 		cursor.close() 
 		conn.close()
 
+
+# @app.route('/updateCard', methods=['PUT'])
+# def updateCard():
+# 		json = request.json
+# 		ExpansionId = json.get("ExpansionID")
+# 		cardName = json.get("Name")
+# 		cardQuantity = json.get("Quantity")
+# 		cardTypeId = json.get("TypeID")
+# 		conn = mysql.connect()
+# 		cursor = conn.cursor()
+# 		sql = "INSERT INTO CARD (Name, Quantity, TypeID, ExpansionID) VALUES (cardName, cardQuantity, cardTypeId, ExpansionId)"
+# 		cursor.execute(sql)
+# 		conn.commit()
+# 		resp = jsonify('card added successfully!')
+# 		resp.status_code = 200
+
+# 		return resp
+# 	except Exception as e:
+# 		print(e)
+# 	finally:
+# 		cursor.close() 
+# 		conn.close()
+
+@app.route('/deleteCard/<int:id>', methods=['DELETE'])
+def deleteCard(id):
+	conn = mysql.connect()
+	cursor = conn.cursor(pymysql.cursors.DictCursor)
+	try:
+		cursor.execute("DELETE FROM card WHERE id={}".format(id))
+		conn.commit()
+		#fetchnone returns a single record or none if no more rows are available
+		res = jsonify('Employee deleted successfully!')
+		res.status_code = 200
+		return res
+
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close() 
+		conn.close()
 
 @app.errorhandler(404)
 def not_found(error=None):
