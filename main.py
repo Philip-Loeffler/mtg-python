@@ -21,7 +21,7 @@ def getCards():
 		cursor.close() 
 		conn.close()
 
-@app.route('/card/<int:id>')
+@app.route('/card/<int:id>', methods=['GET'])
 def getCardById(id):
 	conn = mysql.connect()
 	cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -42,17 +42,17 @@ def getCardById(id):
 
 
 #post
-@app.route('/addCard', methods=['POST'])
+@app.route('/addcard', methods=['POST'])
 def addCard():
 	try:
 		json = request.json
-		ExpansionId = json.get("ExpansionID")
+		expansionId = json.get("ExpansionID")
 		cardName = json.get("Name")
 		cardQuantity = json.get("Quantity")
 		cardTypeId = json.get("TypeID")
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		sql = "INSERT INTO CARD (Name, Quantity, TypeID, ExpansionID) VALUES (cardName, cardQuantity, cardTypeId, ExpansionId)"
+		sql = "INSERT INTO CARD (Name, Quantity, TypeID, ExpansionID) VALUES ('{}', {}, {}, {})".format(cardName, cardQuantity, cardTypeId, expansionId)
 		cursor.execute(sql)
 		conn.commit()
 		resp = jsonify('card added successfully!')
@@ -66,29 +66,31 @@ def addCard():
 		conn.close()
 
 
-# @app.route('/updateCard', methods=['PUT'])
-# def updateCard():
-# 		json = request.json
-# 		ExpansionId = json.get("ExpansionID")
-# 		cardName = json.get("Name")
-# 		cardQuantity = json.get("Quantity")
-# 		cardTypeId = json.get("TypeID")
-# 		conn = mysql.connect()
-# 		cursor = conn.cursor()
-# 		sql = "INSERT INTO CARD (Name, Quantity, TypeID, ExpansionID) VALUES (cardName, cardQuantity, cardTypeId, ExpansionId)"
-# 		cursor.execute(sql)
-# 		conn.commit()
-# 		resp = jsonify('card added successfully!')
-# 		resp.status_code = 200
+@app.route('/updatecard/<int:id>', methods=['PUT'])
+def updateCard(id):
+	try:
+		json = request.json
+		cardId = json.get(id)
+		expansionId = json.get("ExpansionID")
+		cardName = json.get("Name")
+		cardQuantity = json.get("Quantity")
+		cardTypeId = json.get("TypeID")
+		conn = mysql.connect()
+		cursor = conn.cursor()
+		sql = "UPDATE card SET ID={}, Name={}, Quantity={}, TypeID={}, ExpansionID={}, WHERE ID={}".format(id, cardName, cardQuantity, cardTypeId, expansionId, id)
+		cursor.execute(sql)
+		conn.commit()
+		resp = jsonify('card added successfully!')
+		resp.status_code = 200
 
-# 		return resp
-# 	except Exception as e:
-# 		print(e)
-# 	finally:
-# 		cursor.close() 
-# 		conn.close()
+		return resp
+	except Exception as e:
+		print(e)
+	finally:
+		cursor.close() 
+		conn.close()
 
-@app.route('/deleteCard/<int:id>', methods=['DELETE'])
+@app.route('/deletecard/<int:id>', methods=['DELETE'])
 def deleteCard(id):
 	conn = mysql.connect()
 	cursor = conn.cursor(pymysql.cursors.DictCursor)
