@@ -77,10 +77,10 @@ def updateCard(id):
 		cardTypeId = json.get("TypeID")
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		sql = "UPDATE card SET ID={}, Name={}, Quantity={}, TypeID={}, ExpansionID={}, WHERE ID={}".format(id, cardName, cardQuantity, cardTypeId, expansionId, id)
+		sql = "UPDATE card SET Name='{}', Quantity={}, TypeID={}, ExpansionID={} WHERE ID={}".format(cardName, cardQuantity, cardTypeId, expansionId, id)
 		cursor.execute(sql)
 		conn.commit()
-		resp = jsonify('card added successfully!')
+		resp = jsonify('card updated successfully!')
 		resp.status_code = 200
 
 		return resp
